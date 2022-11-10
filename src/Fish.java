@@ -14,14 +14,14 @@ public class Fish {
 
     //This is a constructor that takes 3 parameters.
     // This allows us to specify the hero's name and position when we build it.
-    public Fish(String pName, int pXpos, int pYpos) { // Astronaut constructor
+    public Fish(String pName, int pXpos, int pYpos, int pWidth, int pHeight) { // Fish constructor
         name = pName;
         xpos = pXpos;
         ypos = pYpos;
-        dx = 50;
+        dx = 20;
         dy = 0;
-        width = 300;
-        height = 300;
+        width = pWidth;
+        height = pHeight;
         isAlive = true;
 
     } // end Astronaut constructor
@@ -35,10 +35,21 @@ public class Fish {
     public void bounce() {
         xpos = xpos + dx;
         ypos = ypos + dy;
-        if(xpos >= 770 || xpos <= -60) {   //right or left wall
+        if(xpos >= 500 || xpos <= 0) {   //right or left wall
             dx = -dx;
         }
-        if(ypos >= 1000 || ypos <= 0) {   //right or left wall
+        if(ypos >= 1000 || ypos <= 0) {   //bottom or top wall
+            dy = -dy;
+        }
+    }
+    public void wrap() {
+        xpos = xpos + dx;
+        ypos = ypos + dy;
+        if(xpos >= 1000 || xpos <= 0) {   //right or left wall
+            width=-width;
+            dx = -dx;
+        }
+        if(ypos >= 1000 || ypos <= 0) {   //bottom or top wall
             dy = -dy;
         }
     }

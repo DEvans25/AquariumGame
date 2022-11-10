@@ -39,10 +39,12 @@ public class BasicGameApp implements Runnable {
 
     public BufferStrategy bufferStrategy;
     public Image NemoPic;
+    public Image DoryPic;
 
     //Declare the objects used in the program
     //These are things that are made up of more than one variable type
     public Fish Nemo;
+    public Fish Dory;
 
 
     // Main method definition
@@ -61,8 +63,10 @@ public class BasicGameApp implements Runnable {
 
         //variable and objects
         //create (construct) the objects needed for the game and load up
-        NemoPic = Toolkit.getDefaultToolkit().getImage("astronaut.png"); //load the picture
-        Nemo = new Fish("Nemo",100,100); //construct the fish
+        NemoPic = Toolkit.getDefaultToolkit().getImage("clipart589489.png"); //load the picture
+        DoryPic = Toolkit.getDefaultToolkit().getImage("findingdory.png");
+        Nemo = new Fish("Nemo",100,100, 500, 300); //construct the fish
+        Dory = new Fish("Dory",450,500, -500, 300);
 
 
     } // end BasicGameApp constructor
@@ -88,6 +92,7 @@ public class BasicGameApp implements Runnable {
     public void moveThings() {
         //calls the move( ) code in the objects
         Nemo.bounce();
+        Dory.wrap();
 
     }
 
@@ -135,6 +140,7 @@ public class BasicGameApp implements Runnable {
 
         //draw the image of the fish
         g.drawImage(NemoPic, Nemo.xpos, Nemo.ypos, Nemo.width, Nemo.height, null);
+        g.drawImage(DoryPic, Dory.xpos, Dory.ypos, Dory.width, Dory.height, null);
 
 
         g.dispose();
