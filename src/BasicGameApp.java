@@ -52,7 +52,9 @@ public class BasicGameApp implements Runnable {
     public SpeechBubble yum;
 
     public int timer;
+    public int timer2;
     public boolean timerIsRunning;
+    public boolean  timer2IsRunning;
 
 
     // Main method definition
@@ -97,7 +99,9 @@ public class BasicGameApp implements Runnable {
     // this is the code that plays the game after you set things up
     public void run() {
         timerIsRunning = false;
+        timer2IsRunning = true;
         timer = 0;
+        timer2 = 0;
         Dory.isAlive = true;
         Nemo.isAlive = true;
         yum.isTalking = false;
@@ -112,6 +116,8 @@ public class BasicGameApp implements Runnable {
             crash();
             eat();
             runTimer();
+            Bruce.hitbox.x = Bruce.xpos;
+            Bruce.hitbox.y = Bruce.ypos;
             render();  // paint the graphics
             pause(20); // sleep for 10 ms
         }
@@ -133,22 +139,37 @@ public class BasicGameApp implements Runnable {
     public void runTimer() {
         if(timerIsRunning == true) {
             timer = timer + 1;
-            System.out.println(timer);
+            System.out.println("Nemo: " + timer);
+        }
+        if(timer2IsRunning == true) {
+            timer2 = timer2 + 1;
+            System.out.println("Bruce: " + timer2);
         }
     }
     public void eat() {
-
+        if(timer2 >= 300) {
+            timer2 = 0;
+            timer2IsRunning = false;
+            Bruce.xpos = (int)(Math.random()*500+100);
+            Bruce.ypos = (int)(Math.random()*500+100);
+        }
         if(Nemo.hitbox.intersects(Bruce.hitbox)) {
             Nemo.isAlive = false;
             yum.isTalking = true;
             timerIsRunning = true;
+
             if (timer >= 200) {
                 Nemo.isAlive = true;
                 yum.isTalking = false;
                 timerIsRunning = false;
                 Nemo.xpos = 200;
                 Nemo.ypos = 100;
+                Nemo.dx = Math.abs(Nemo.dx);
+                Nemo.dy = Math.abs(Nemo.dy);
                 timer = 0;
+                Bruce.xpos = 2000;
+                Bruce.ypos = 2000;
+                timer2IsRunning = true;
             }
         }
     }
