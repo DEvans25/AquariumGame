@@ -40,11 +40,19 @@ public class BasicGameApp implements Runnable {
     public BufferStrategy bufferStrategy;
     public Image NemoPic;
     public Image DoryPic;
+    public Image BrucePic;
+    public Image speechBubblePic;
+    public Image backgroundPic;
 
     //Declare the objects used in the program
     //These are things that are made up of more than one variable type
     public Fish Nemo;
     public Fish Dory;
+    public Fish Bruce;
+    public SpeechBubble yum;
+
+    public int timer;
+    public boolean timerIsRunning;
 
 
     // Main method definition
@@ -54,6 +62,8 @@ public class BasicGameApp implements Runnable {
         new Thread(ex).start();                 //creates a threads & starts up the code in the run( ) method
     }
 
+    public int crashes;
+    public boolean upCrash;
 
     // This section is the setup portion of the program
     // Initialize your variables and construct your program objects here.
@@ -65,8 +75,14 @@ public class BasicGameApp implements Runnable {
         //create (construct) the objects needed for the game and load up
         NemoPic = Toolkit.getDefaultToolkit().getImage("clipart589489.png"); //load the picture
         DoryPic = Toolkit.getDefaultToolkit().getImage("findingdory.png");
-        Nemo = new Fish("Nemo",100,100, 500, 300); //construct the fish
-        Dory = new Fish("Dory",450,500, -500, 300);
+        BrucePic = Toolkit.getDefaultToolkit().getImage("brucetheshark.png");
+        speechBubblePic = Toolkit.getDefaultToolkit().getImage("Speech-bubble-yum.png");
+        backgroundPic = Toolkit.getDefaultToolkit().getImage("cartoon_ocean3.jpg");
+
+        Nemo = new Fish("Nemo",200,100, 100, 70, 20, 10); //construct the fish
+        Dory = new Fish("Dory",450,500, 100, 70, 20, 10);
+        Bruce = new Fish("Fish", 2000, 2000, 200, 200, 0, 0);
+        yum = new SpeechBubble(false,560,440,100,100);
 
 
     } // end BasicGameApp constructor
@@ -80,10 +96,22 @@ public class BasicGameApp implements Runnable {
     // main thread
     // this is the code that plays the game after you set things up
     public void run() {
-
+        timerIsRunning = false;
+        timer = 0;
+        Dory.isAlive = true;
+        Nemo.isAlive = true;
+        yum.isTalking = false;
+        System.out.println("Nemo.dx = "+Nemo.dx);
+        System.out.println("Nemo.dy = "+Nemo.dy);
+        System.out.println("Dory.dx = "+Dory.dx);
+        System.out.println("Dory.dy = "+Dory.dy);
         //for the moment we will loop things forever.
+
         while (true) {
             moveThings();  //move all the game objects
+            crash();
+            eat();
+            runTimer();
             render();  // paint the graphics
             pause(20); // sleep for 10 ms
         }
@@ -91,10 +119,40 @@ public class BasicGameApp implements Runnable {
 
     public void moveThings() {
         //calls the move( ) code in the objects
-        Nemo.bounce();
-        Dory.wrap();
-
+            Nemo.bounce();
+            Dory.wrap();
     }
+    public void crash() {
+        if(Nemo.hitbox.intersects(Dory.hitbox)) {
+            Nemo.dx = -Nemo.dx;
+            Nemo.dy = -Nemo.dy;
+            Dory.dx = -Dory.dx;
+            Dory.dy = -Dory.dy;
+        }
+    }
+    public void runTimer() {
+        if(timerIsRunning == true) {
+            timer = timer + 1;
+            System.out.println(timer);
+        }
+    }
+    public void eat() {
+
+        if(Nemo.hitbox.intersects(Bruce.hitbox)) {
+            Nemo.isAlive = false;
+            yum.isTalking = true;
+            timerIsRunning = true;
+            if (timer >= 200) {
+                Nemo.isAlive = true;
+                yum.isTalking = false;
+                timerIsRunning = false;
+                Nemo.xpos = 200;
+                Nemo.ypos = 100;
+                timer = 0;
+            }
+        }
+    }
+
 
     //Pauses or sleeps the computer for the amount specified in milliseconds
     public void pause(int time ) {
@@ -139,8 +197,34 @@ public class BasicGameApp implements Runnable {
         g.clearRect(0, 0, WIDTH, HEIGHT);
 
         //draw the image of the fish
-        g.drawImage(NemoPic, Nemo.xpos, Nemo.ypos, Nemo.width, Nemo.height, null);
-        g.drawImage(DoryPic, Dory.xpos, Dory.ypos, Dory.width, Dory.height, null);
+        g.drawRect(Nemo.hitbox.x, Nemo.hitbox.y, Nemo.hitbox.width, Nemo.hitbox.height);
+        g.drawRect(Dory.hitbox.x, Dory.hitbox.y, Dory.hitbox.width, Dory.hitbox.height);
+        g.drawRect(Bruce.hitbox.x, Bruce.hitbox.y, Bruce.hitbox.width, Bruce.hitbox.height);
+
+        g.drawImage(backgroundPic, 0, 0, WIDTH, HEIGHT, null);
+        if (Nemo.isAlive == true) {
+            g.drawImage(NemoPic, Nemo.xpos, Nemo.ypos, Nemo.width, Nemo.height, null);
+        }
+        if (Dory.isAlive == true){
+            g.drawImage(DoryPic, Dory.xpos, Dory.ypos, Dory.width, Dory.height, null);
+        }
+
+        g.drawImage(BrucePic, Bruce.xpos, Bruce.ypos, Bruce.width, Bruce.height, null);
+        if(yum.isTalking == true) {
+            g.drawImage(speechBubblePic, Bruce.xpos + 65, Bruce.ypos - 60, yum.width, yum.height, null);
+        }
+
+        //g.drawRect(Nemo.leftBox.x, Nemo.leftBox.y, 1, Nemo.leftBox.height);
+        //g.drawRect(Dory.leftBox.x, Dory.leftBox.y, 1, Dory.leftBox.height);
+        //g.drawRect(Nemo.rightBox.x + Nemo.width, Nemo.rightBox.y, 10, Nemo.rightBox.height);
+        //g.drawRect(Dory.rightBox.x + Dory.width, Dory.rightBox.y, 10, Dory.rightBox.height);
+        //g.drawRect(Nemo.upBox.x, Nemo.upBox.y, Nemo.upBox.width, 10);
+        //g.drawRect(Dory.upBox.x, Dory.upBox.y, Nemo.upBox.width, 10);
+        //g.drawRect(Nemo.downBox.x, Nemo.downBox.y + Nemo.height, Nemo.downBox.width, 10);
+        //g.drawRect(Dory.downBox.x, Dory.downBox.y + Dory.height, Nemo.downBox.width, 10);
+
+
+
 
 
         g.dispose();
