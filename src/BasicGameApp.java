@@ -18,11 +18,13 @@ import java.awt.*;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import java.awt.event.*;
+
 
 //*******************************************************************************
 // Class Definition Section
 
-public class BasicGameApp implements Runnable {
+public class BasicGameApp implements Runnable, KeyListener {
 
     //Variable Definition Section
     //Declare the variables used in the program
@@ -54,7 +56,9 @@ public class BasicGameApp implements Runnable {
     public int timer;
     public int timer2;
     public boolean timerIsRunning;
-    public boolean  timer2IsRunning;
+    public boolean timer2IsRunning;
+
+    public boolean controllable;
 
 
     // Main method definition
@@ -73,6 +77,8 @@ public class BasicGameApp implements Runnable {
 
         setUpGraphics();
 
+        canvas.addKeyListener(this);
+
         //variable and objects
         //create (construct) the objects needed for the game and load up
         NemoPic = Toolkit.getDefaultToolkit().getImage("clipart589489.png"); //load the picture
@@ -81,8 +87,8 @@ public class BasicGameApp implements Runnable {
         speechBubblePic = Toolkit.getDefaultToolkit().getImage("Speech-bubble-yum.png");
         backgroundPic = Toolkit.getDefaultToolkit().getImage("cartoon_ocean3.jpg");
 
-        Nemo = new Fish("Nemo",200,100, 100, 70, 20, 10); //construct the fish
-        Dory = new Fish("Dory",450,500, 100, 70, 20, 10);
+        Nemo = new Fish("Nemo",200,100, 100, 70, 20, 15); //construct the fish
+        Dory = new Fish("Dory",450,500, 100, 70, 20, 15);
         Bruce = new Fish("Fish", 2000, 2000, 200, 200, 0, 0);
         yum = new SpeechBubble(false,560,440,100,100);
 
@@ -97,9 +103,56 @@ public class BasicGameApp implements Runnable {
 
     // main thread
     // this is the code that plays the game after you set things up
+
+    public void keyPressed(KeyEvent event) {
+        //This method will do something whenever any key is pressed down.
+        //Put if( ) statements here
+        char key = event.getKeyChar();     //gets the character of the key pressed
+        int keyCode = event.getKeyCode();  //gets the keyCode (an integer) of the key pressed
+        System.out.println("Key Pressed: " + key + "  Code: " + keyCode);
+
+        if (keyCode == 68) {
+            Bruce.dx = 5;
+        }
+        if (keyCode == 65) {
+            Bruce.dx = -5;
+        }
+        if (keyCode == 83) {
+            Bruce.dy = 5;
+        }
+        if (keyCode == 87) {
+            Bruce.dy = -5;
+        }
+    }//keyPressed()
+
+    public void keyReleased(KeyEvent event) {
+        char key = event.getKeyChar();
+        int keyCode = event.getKeyCode();
+        //This method will do something when a key is released
+        if (keyCode == 68) {
+            Bruce.dx = 0;
+        }
+        if (keyCode == 65) {
+            Bruce.dx = 0;
+        }
+        if (keyCode == 83) {
+            Bruce.dy = 0;
+        }
+        if (keyCode == 87) {
+            Bruce.dy = 0;
+        }
+
+    }//keyReleased()
+
+    public void keyTyped(KeyEvent event) {
+        // handles a press of a character key (any key that can be printed but not keys like SHIFT)
+        // we won't be using this method, but it still needs to be in your program
+    }//keyTyped()
+
     public void run() {
         timerIsRunning = false;
         timer2IsRunning = true;
+        controllable = false;
         timer = 0;
         timer2 = 0;
         Dory.isAlive = true;
@@ -116,6 +169,7 @@ public class BasicGameApp implements Runnable {
             crash();
             eat();
             runTimer();
+            BruceControls();
             Bruce.hitbox.x = Bruce.xpos;
             Bruce.hitbox.y = Bruce.ypos;
             render();  // paint the graphics
@@ -146,10 +200,16 @@ public class BasicGameApp implements Runnable {
             System.out.println("Bruce: " + timer2);
         }
     }
+    public void BruceControls() {
+        keyPressed();
+        keyReleased();
+        keyTyped();
+    }
     public void eat() {
         if(timer2 >= 300) {
             timer2 = 0;
             timer2IsRunning = false;
+            controllable = true;
             Bruce.xpos = (int)(Math.random()*500+100);
             Bruce.ypos = (int)(Math.random()*500+100);
         }
@@ -162,6 +222,7 @@ public class BasicGameApp implements Runnable {
                 Nemo.isAlive = true;
                 yum.isTalking = false;
                 timerIsRunning = false;
+                controllable = false;
                 Nemo.xpos = 200;
                 Nemo.ypos = 100;
                 Nemo.dx = Math.abs(Nemo.dx);
@@ -220,7 +281,7 @@ public class BasicGameApp implements Runnable {
         //draw the image of the fish
         g.drawRect(Nemo.hitbox.x, Nemo.hitbox.y, Nemo.hitbox.width, Nemo.hitbox.height);
         g.drawRect(Dory.hitbox.x, Dory.hitbox.y, Dory.hitbox.width, Dory.hitbox.height);
-        g.drawRect(Bruce.hitbox.x, Bruce.hitbox.y, Bruce.hitbox.width, Bruce.hitbox.height);
+        g.drawRect(Bruce.hitbox.x, Bruce.hitbox.y, Bruce.hitbox.width-30, Bruce.hitbox.height-20);
 
         g.drawImage(backgroundPic, 0, 0, WIDTH, HEIGHT, null);
         if (Nemo.isAlive == true) {
@@ -229,7 +290,6 @@ public class BasicGameApp implements Runnable {
         if (Dory.isAlive == true){
             g.drawImage(DoryPic, Dory.xpos, Dory.ypos, Dory.width, Dory.height, null);
         }
-
         g.drawImage(BrucePic, Bruce.xpos, Bruce.ypos, Bruce.width, Bruce.height, null);
         if(yum.isTalking == true) {
             g.drawImage(speechBubblePic, Bruce.xpos + 65, Bruce.ypos - 60, yum.width, yum.height, null);
@@ -250,5 +310,20 @@ public class BasicGameApp implements Runnable {
 
         g.dispose();
         bufferStrategy.show();
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+
     }
 }
