@@ -55,6 +55,7 @@ public class BasicGameApp implements Runnable, KeyListener {
 
     public int timer;
     public int timer2;
+    public int BruceY;
     public boolean timerIsRunning;
     public boolean timer2IsRunning;
 
@@ -111,34 +112,32 @@ public class BasicGameApp implements Runnable, KeyListener {
         int keyCode = event.getKeyCode();  //gets the keyCode (an integer) of the key pressed
         System.out.println("Key Pressed: " + key + "  Code: " + keyCode);
 
-        if (keyCode == 68) {
-            Bruce.dx = 5;
+        if (keyCode == 68) {  // d right
+            Bruce.dx = 15;
         }
-        if (keyCode == 65) {
-            Bruce.dx = -5;
+        if (keyCode == 65) {  // a left
+            Bruce.dx = -15;
         }
-        if (keyCode == 83) {
-            Bruce.dy = 5;
+        if (keyCode == 32) {  // spacebar up
+            Bruce.dy = -15;
         }
-        if (keyCode == 87) {
-            Bruce.dy = -5;
-        }
+
     }//keyPressed()
 
     public void keyReleased(KeyEvent event) {
         char key = event.getKeyChar();
         int keyCode = event.getKeyCode();
         //This method will do something when a key is released
-        if (keyCode == 68) {
+        if (keyCode == 68) {  //d
             Bruce.dx = 0;
         }
-        if (keyCode == 65) {
+        if (keyCode == 65) {  //a
             Bruce.dx = 0;
         }
-        if (keyCode == 83) {
+        if (keyCode == 83) {  //s
             Bruce.dy = 0;
         }
-        if (keyCode == 87) {
+        if (keyCode == 87) {  //w
             Bruce.dy = 0;
         }
 
@@ -181,6 +180,7 @@ public class BasicGameApp implements Runnable, KeyListener {
         //calls the move( ) code in the objects
             Nemo.bounce();
             Dory.wrap();
+            Bruce.move();
     }
     public void crash() {
         if(Nemo.hitbox.intersects(Dory.hitbox)) {
@@ -201,9 +201,7 @@ public class BasicGameApp implements Runnable, KeyListener {
         }
     }
     public void BruceControls() {
-        keyPressed();
-        keyReleased();
-        keyTyped();
+
     }
     public void eat() {
         if(timer2 >= 300) {
@@ -212,6 +210,7 @@ public class BasicGameApp implements Runnable, KeyListener {
             controllable = true;
             Bruce.xpos = (int)(Math.random()*500+100);
             Bruce.ypos = (int)(Math.random()*500+100);
+            BruceY = Bruce.ypos;
         }
         if(Nemo.hitbox.intersects(Bruce.hitbox)) {
             Nemo.isAlive = false;
@@ -284,14 +283,14 @@ public class BasicGameApp implements Runnable, KeyListener {
         g.drawRect(Bruce.hitbox.x, Bruce.hitbox.y, Bruce.hitbox.width-30, Bruce.hitbox.height-20);
 
         g.drawImage(backgroundPic, 0, 0, WIDTH, HEIGHT, null);
-        if (Nemo.isAlive == true) {
+        if (Nemo.isAlive) {
             g.drawImage(NemoPic, Nemo.xpos, Nemo.ypos, Nemo.width, Nemo.height, null);
         }
-        if (Dory.isAlive == true){
+        if (Dory.isAlive){
             g.drawImage(DoryPic, Dory.xpos, Dory.ypos, Dory.width, Dory.height, null);
         }
         g.drawImage(BrucePic, Bruce.xpos, Bruce.ypos, Bruce.width, Bruce.height, null);
-        if(yum.isTalking == true) {
+        if(yum.isTalking) {
             g.drawImage(speechBubblePic, Bruce.xpos + 65, Bruce.ypos - 60, yum.width, yum.height, null);
         }
 
@@ -311,19 +310,5 @@ public class BasicGameApp implements Runnable, KeyListener {
         g.dispose();
         bufferStrategy.show();
     }
-
-    @Override
-    public void keyTyped(KeyEvent e) {
-
-    }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-
-    }
+    
 }

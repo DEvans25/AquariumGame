@@ -83,4 +83,18 @@ public class Fish {
         //downBox = new Rectangle(xpos, ypos, width, height);
 
     }
+
+    public void jump() {
+        xpos = xpos + dx;
+        ypos = ypos + dy;
+        if(xpos >= 1000-width || xpos <= 0) {   //right or left wall
+            dx = -dx;
+        }
+        if(ypos >= 900-height || ypos <= 0) {   //bottom or top wall
+            dy = -dy;
+        }
+
+        hitbox = new Rectangle(xpos, ypos, width, height);
+    }
+
 }
